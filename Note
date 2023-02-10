@@ -1,6 +1,7 @@
 ===========kapao=============
 cd GPUoffloadtest/kapao
 conda activate kapao
+如果缺少模型，先下载模型： python data/scripts/download_models.py
 python GPUoffload_test/inference.py --bbox
 注：会处理GPUoffloadtest/kapao/GPUoffload_test/input内所有图片，输出到GPUoffloadtest/kapao/GPUoffload_test/output。--bbox可设为--pose/face/kpbbox
 ===========calvin=============

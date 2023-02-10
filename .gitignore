@@ -1,0 +1,4 @@
+.idea
+kapao/*.pt
+calvin/data/*/train
+calvin/data/*/val

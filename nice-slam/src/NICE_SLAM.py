@@ -292,23 +292,23 @@ class NICE_SLAM():
         """
         Dispatch Threads.
         """
-        self.mapping(0)
-        # processes = []
-        # for rank in range(3):
-        #     if rank == 0:
-        #         p = mp.Process(target=self.tracking, args=(rank, ))
-        #     elif rank == 1:
-        #         p = mp.Process(target=self.mapping, args=(rank, ))
-        #     elif rank == 2:
-        #         if self.coarse:
-        #             p = mp.Process(target=self.coarse_mapping, args=(rank, ))
-        #         else:
-        #             continue
-        #     p.start()
-        #     processes.append(p)
-        # for p in processes:
-        #     p.join()
-        #
+
+        processes = []
+        for rank in range(3):
+            if rank == 0:
+                p = mp.Process(target=self.tracking, args=(rank, ))
+            elif rank == 1:
+                p = mp.Process(target=self.mapping, args=(rank, ))
+            elif rank == 2:
+                if self.coarse:
+                    p = mp.Process(target=self.coarse_mapping, args=(rank, ))
+                else:
+                    continue
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+
 
 # This part is required by torch.multiprocessing
 if __name__ == '__main__':
