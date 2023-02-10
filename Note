@@ -2,7 +2,7 @@
 cd GPUoffloadtest/kapao
 conda activate kapao
 python GPUoffload_test/inference.py --bbox
-注：会处理GPUoffloadtest/kapao/input内所有图片，输出到GPUoffloadtest/kapao/output。--bbox可设为--pose/face/kpbbox
+注：会处理GPUoffloadtest/kapao/GPUoffload_test/input内所有图片，输出到GPUoffloadtest/kapao/GPUoffload_test/output。--bbox可设为--pose/face/kpbbox
 ===========calvin=============
 cd GPUoffloadtest/calvin
 conda activate calvin
