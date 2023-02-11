@@ -20,6 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-input', '--input-path', default='GPUoffload_test/input', help='path to image')
     parser.add_argument('-output', '--output-path', default='GPUoffload_test/output', help='')
+    parser.add_argument("--times", "-times", type=int, help="number of inference runs", default=100)
     # plotting options
     parser.add_argument('--bbox', action='store_true')
     parser.add_argument('--kp-bbox', action='store_true')
@@ -72,15 +73,18 @@ if __name__ == '__main__':
     imgsz = check_img_size(args.imgsz, s=stride)  # check image size
     dataset = LoadImages(args.input_path, img_size=imgsz, stride=stride, auto=True)
     dataset_iterator = iter(dataset)
+    img_num = len(dataset_iterator)
+    max_inf_num = args.times
+
     i = 0
     total_img_size = 0
     total_running_time = 0
     total_inf_time = 0
 
-    while True:
+    while i < max_inf_num:
         try:
+            print(f"processing {i + 1} / {max_inf_num}")
             time_ckp_0 = time.time()
-            # start 0
             (pic_name, img, im0, _) = next(dataset_iterator)
             pic_name=pic_name.split("/", -1)[-1].split(".", -1)[0]
             # img tensor memory size
@@ -144,7 +148,7 @@ if __name__ == '__main__':
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time.time() - time_ckp_0
         except StopIteration:
-            break
+            dataset_iterator = iter(dataset)
 
     print(f"Average input size: {total_img_size/i} byte, "
           f"Average running time: {total_running_time/i}, "
