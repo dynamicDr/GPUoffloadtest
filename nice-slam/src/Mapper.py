@@ -1,4 +1,6 @@
 import os
+import pickle
+import sys
 import time
 
 import cv2
@@ -247,6 +249,21 @@ class Mapper(object):
         Returns:
             cur_c2w/None (tensor/None): return the updated cur_c2w, return None if no BA
         """
+        # # Make histories
+        # print(f"Make history: Optimize_map")
+        # print(num_joint_iters, lr_factor, idx)
+        # arg_values = [cur_gt_color, cur_gt_depth, gt_cur_c2w, keyframe_dict, keyframe_list, cur_c2w]
+        # arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
+        # os.makedirs(f"GPUoffload_test/saved_obs/", exist_ok=True)
+        # num = len([f for f in os.listdir(f"GPUoffload_test/saved_obs/")])
+        # if num > 10:
+        #     sys.exit()
+        # os.makedirs(f"GPUoffload_test/saved_obs/{num}/", exist_ok=True)
+        # for i in range(len(arg_values)):
+        #     with open(f"GPUoffload_test/saved_obs/{num}/{arg_names[i]}.pkl", 'wb+') as file:
+        #         pickle.dump(arg_values[i], file)
+        # print(f"saved {num}")
+
         H, W, fx, fy, cx, cy = self.H, self.W, self.fx, self.fy, self.cx, self.cy
         c = self.c
         cfg = self.cfg
@@ -488,20 +505,21 @@ class Mapper(object):
             depth_mask = (batch_gt_depth > 0)
             loss = torch.abs(
                 batch_gt_depth[depth_mask]-depth[depth_mask]).sum()
-            if ((not self.nice) or (self.stage == 'color')):
-                color_loss = torch.abs(batch_gt_color - color).sum()
-                weighted_color_loss = self.w_color_loss*color_loss
-                loss += weighted_color_loss
+            # if ((not self.nice) or (self.stage == 'color')):
+            color_loss = torch.abs(batch_gt_color - color).sum()
+            weighted_color_loss = self.w_color_loss*color_loss
+            loss += weighted_color_loss
 
             # for imap*, it uses volume density
             regulation = (not self.occupancy)
-            if regulation:
-                point_sigma = self.renderer.regulation(
-                    c, self.decoders, batch_rays_d, batch_rays_o, batch_gt_depth, device, self.stage)
-                regulation_loss = torch.abs(point_sigma).sum()
-                loss += 0.0005*regulation_loss
+            # if regulation:
+            point_sigma = self.renderer.regulation(
+                c, self.decoders, batch_rays_d, batch_rays_o, batch_gt_depth, device, self.stage)
+            regulation_loss = torch.abs(point_sigma).sum()
+            loss += 0.0005*regulation_loss
 
             loss.backward(retain_graph=False)
+
             optimizer.step()
             if not self.nice:
                 # for imap*

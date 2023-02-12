@@ -72,8 +72,8 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
             histories = pickle.load(file)
         with open(f"GPUoffload_test/saved_obs/{i - i % 1000}/new_episodes.pkl", 'rb') as file:
             new_episodes = pickle.load(file)
-        print(str(histories.__sizeof__()))
-        print(type(histories))
+        # print(str(histories.__sizeof__()))
+        # print(type(histories))
         # total_input_size += (str(histories.__sizeof__()) + str(new_episodes.__sizeof__()))
         inf_start_time = time.time()
         _, _, _ = agent.policy(histories, new_episodes, None)

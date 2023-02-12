@@ -49,20 +49,22 @@ def main():
     decoders = model
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     slam = NICE_SLAM(cfg, args)
-    renderer = slam.renderer
+    # renderer = slam.renderer
+    mapper = slam.mapper
     total_input_size = total_running_time = total_inf_time = 0
-
     for i in range(n_steps):
         time_ckp_0 = time.time()
-        with open(f"GPUoffload_test/saved_obs/{i - i % file_num}/c.pkl", 'rb') as file:
-            c = pickle.load(file)
-        rays_d = torch.load(f"GPUoffload_test/saved_obs/{i - i % file_num}/rays_d.pth")
-        rays_o = torch.load(f"GPUoffload_test/saved_obs/{i - i % file_num}/rays_o.pth")
-        with open(f"GPUoffload_test/saved_obs/{i - i % file_num}/stage.pkl", 'rb') as file:
-            stage = pickle.load(file)
-        total_input_size += (sys.getsizeof(c) + sys.getsizeof(rays_d) + sys.getsizeof(rays_o) + sys.getsizeof(stage))
+        arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
+        arg_dict = {}
+        for arg_name in arg_names:
+            with open(f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl", 'rb') as file:
+                arg_dict[arg_name] = pickle.load(file)
+        # total_input_size += (sys.getsizeof(c) + sys.getsizeof(rays_d) + sys.getsizeof(rays_o) + sys.getsizeof(stage))
         time_ckp_1 = time.time()
-        renderer.render_batch_ray(c, decoders, rays_d, rays_o, device, stage, None)
+        mapper.optimize_map(1, cfg['mapping']['lr_first_factor'], 0, arg_dict["cur_gt_color"], arg_dict["cur_gt_depth"],
+                            arg_dict["gt_cur_c2w"], arg_dict["keyframe_dict"], arg_dict["keyframe_list"],
+                            arg_dict["cur_c2w"])
+
         time_ckp_2 = time.time()
         total_inf_time += (time_ckp_2 - time_ckp_1)
         total_running_time += (time_ckp_2 - time_ckp_0)

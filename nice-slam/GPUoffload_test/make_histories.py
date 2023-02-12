@@ -1,4 +1,4 @@
-# See nice-slam/src/utils/Renderer.py line 85
+# See nice-slam/src/Mapper.py line 234
 import argparse
 import random
 

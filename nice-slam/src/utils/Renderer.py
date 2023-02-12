@@ -50,6 +50,7 @@ class Renderer(object):
             mask = mask_x & mask_y & mask_z
 
             pi = pi.unsqueeze(0)
+            # print(type(decoders))
             if self.nice:
                 ret = decoders(pi, c_grid=c, stage=stage)
             else:
@@ -217,7 +218,7 @@ class Renderer(object):
 
         return depth, uncertainty, color
 
-    def render_img(self, c, decoders, c2w, device, stage, gt_depth=None): # inference time. inference time + read = runnning time
+    def render_img(self, c, decoders, c2w, device, stage, gt_depth=None):
         """
         Renders out depth, uncertainty, and color images.
 

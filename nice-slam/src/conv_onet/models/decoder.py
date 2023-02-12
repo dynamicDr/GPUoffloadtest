@@ -120,7 +120,6 @@ class MLP(nn.Module):
         self.concat_feature = concat_feature
         self.n_blocks = n_blocks
         self.skips = skips
-
         if c_dim != 0:
             self.fc_c = nn.ModuleList([
                 nn.Linear(c_dim, hidden_size) for i in range(n_blocks)
@@ -236,7 +235,6 @@ class MLP_no_xyz(nn.Module):
         self.c_dim = c_dim
         self.n_blocks = n_blocks
         self.skips = skips
-
         self.pts_linears = nn.ModuleList(
             [DenseLayer(hidden_size, hidden_size, activation="relu")] +
             [DenseLayer(hidden_size, hidden_size, activation="relu") if i not in self.skips
