@@ -93,7 +93,6 @@ if __name__ == '__main__':
             if len(img.shape) == 3:
                 img = img[None]  # expand for batch dim
 
-
             time_ckp_1 = time.time()
 
             out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]

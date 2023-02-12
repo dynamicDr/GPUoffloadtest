@@ -25,8 +25,8 @@ class CALVINConv2d(CALVINBase):
         kernel_c_y = (self.ky - 1) // 2
         self.padding = (kernel_c_x, kernel_c_y)
 
-        self.aa_net = make_conv_layers(l_i=self.l_i, l_h=5 * l_h, l_o=len(self.actions) + 1,
-                                       kx=self.kx, ky=self.ky, n_layers=5 * n_layers, dropout=self.dropout)
+        self.aa_net = make_conv_layers(l_i=self.l_i, l_h=4 * l_h, l_o=len(self.actions) + 1,
+                                       kx=self.kx, ky=self.ky, n_layers=4 * n_layers, dropout=self.dropout)
 
         self.warning_given = False
 

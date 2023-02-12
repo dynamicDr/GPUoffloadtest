@@ -4,12 +4,62 @@ import pickle
 import shutil
 import sys
 import time
-
+from collections import deque
+from itertools import chain
+from sys import getsizeof as getsize
 sys.path.append(".")
 
 from core.utils.trainer_utils import setup_agent
 from core.env import VecEnv
 from core.experiences import ExperienceManager
+
+from sys import getsizeof, stderr
+from itertools import chain
+from collections import deque
+#
+# try:
+#     from reprlib import repr
+# except ImportError:
+#     pass
+#
+#
+# def total_size(o, handlers={}, verbose=False):
+#     """ Returns the approximate memory footprint an object and all of its contents.
+#     Automatically finds the contents of the following builtin containers and
+#     their subclasses:  tuple, list, deque, dict, set and frozenset.
+#     To search other containers, add handlers to iterate over their contents:
+#         handlers = {SomeContainerClass: iter,
+#                     OtherContainerClass: OtherContainerClass.get_elements}
+#     """
+#     dict_handler = lambda d: chain.from_iterable(d.items())
+#     all_handlers = {tuple: iter,
+#                     list: iter,
+#                     deque: iter,
+#                     dict: dict_handler,
+#                     set: iter,
+#                     frozenset: iter,
+#                     }
+#     all_handlers.update(handlers)  # user handlers take precedence
+#     seen = set()  # track which object id's have already been seen
+#     default_size = getsizeof(0)  # estimate sizeof object without __sizeof__
+#
+#     def sizeof(o):
+#         if id(o) in seen:  # do not double count the same object
+#             return 0
+#         seen.add(id(o))
+#         s = getsizeof(o, default_size)
+#
+#         if verbose:
+#             print(s, type(o), repr(o), file=stderr)
+#
+#         for typ, handler in all_handlers.items():
+#             if isinstance(o, typ):
+#                 s += sum(map(sizeof, handler(o)))
+#                 break
+#         return s
+#
+#     return sizeof(o)
+#
 
 
 def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None, split=None, **config):
@@ -22,8 +72,9 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
             histories = pickle.load(file)
         with open(f"GPUoffload_test/saved_obs/{i - i % 1000}/new_episodes.pkl", 'rb') as file:
             new_episodes = pickle.load(file)
-
-        total_input_size += (sys.getsizeof(histories) + sys.getsizeof(new_episodes))
+        print(str(histories.__sizeof__()))
+        print(type(histories))
+        # total_input_size += (str(histories.__sizeof__()) + str(new_episodes.__sizeof__()))
         inf_start_time = time.time()
         _, _, _ = agent.policy(histories, new_episodes, None)
         end_time = time.time()
@@ -57,7 +108,6 @@ def main():
     if not config['data']:
         config['data'] = os.path.join(os.path.dirname(checkpoint), "..", "..", "..")
     eval_agent(**config)
-
 
 if __name__ == "__main__":
     main()

@@ -57,7 +57,6 @@ def main():
         with open(f"GPUoffload_test/saved_obs/{i - i % file_num}/c.pkl", 'rb') as file:
             c = pickle.load(file)
         rays_d = torch.load(f"GPUoffload_test/saved_obs/{i - i % file_num}/rays_d.pth")
-
         rays_o = torch.load(f"GPUoffload_test/saved_obs/{i - i % file_num}/rays_o.pth")
         with open(f"GPUoffload_test/saved_obs/{i - i % file_num}/stage.pkl", 'rb') as file:
             stage = pickle.load(file)
