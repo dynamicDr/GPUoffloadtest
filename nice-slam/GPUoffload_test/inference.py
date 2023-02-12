@@ -32,7 +32,7 @@ def main():
                         help='input folder, this have higher priority, can overwrite the one in config file')
     parser.add_argument('--output', type=str,
                         help='output folder, this have higher priority, can overwrite the one in config file')
-    parser.add_argument('--times', type=str, default=100)
+    parser.add_argument('--times', type=int, default=100)
     nice_parser = parser.add_mutually_exclusive_group(required=False)
     nice_parser.add_argument('--nice', dest='nice', action='store_true')
     nice_parser.add_argument('--imap', dest='nice', action='store_false')

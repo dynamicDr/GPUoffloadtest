@@ -5,6 +5,7 @@ conda activate kapao
 python GPUoffload_test/inference.py --bbox -times 1000
 注：会循环处理GPUoffloadtest/kapao/GPUoffload_test/input内所有图片，输出到GPUoffloadtest/kapao/GPUoffload_test/output。--bbox可设为--pose/face/kpbbox
 -times 1000换成要测试的图片数量。
+注意！：先管我要data放到GPUoffloadtest/kapao/data，再运行
 
 ===========calvin=============
 -----准备模型-----
@@ -20,7 +21,6 @@ python GPUoffload_test/inference.py data/gridworld/MazeMap_15x15_vr_2_4000_15_50
 扩大了模型的新版： python GPUoffload_test/inference.py data/gridworld/MazeMap_15x15_vr_2_4000_15_500/models/CALVINConv2d_k_60_i_3_h_150_adam_0.005_0.1_0.25_0212_114818_433506/epoch_000/checkpoint.pt -times 100
 
 ===========nice_slam=============
+cd GPUoffloadtest/nice-slam
 conda activate nice-slam
-python -W ignore GPUoffload_test/inference.py configs/Demo/demo.yaml
-
-
+python -W ignore GPUoffload_test/inference.py configs/Demo/demo.yaml --times 100
