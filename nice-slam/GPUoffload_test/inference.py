@@ -45,11 +45,7 @@ def main():
     file_num = len([f for f in os.listdir(f"GPUoffload_test/saved_obs/")])
     assert file_num > 0
     n_steps = args.times
-    model = config.get_model(cfg, nice=args.nice)
-    decoders = model
-    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     slam = NICE_SLAM(cfg, args)
-    # renderer = slam.renderer
     mapper = slam.mapper
     total_input_size = total_running_time = total_inf_time = 0
     for i in range(n_steps):
@@ -57,14 +53,14 @@ def main():
         arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
         arg_dict = {}
         for arg_name in arg_names:
-            with open(f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl", 'rb') as file:
+            file_path = f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl"
+            with open(file_path, 'rb') as file:
                 arg_dict[arg_name] = pickle.load(file)
-        # total_input_size += (sys.getsizeof(c) + sys.getsizeof(rays_d) + sys.getsizeof(rays_o) + sys.getsizeof(stage))
+                total_input_size += os.stat(file_path).st_size
         time_ckp_1 = time.time()
-        mapper.optimize_map(1, cfg['mapping']['lr_first_factor'], 0, arg_dict["cur_gt_color"], arg_dict["cur_gt_depth"],
+        mapper.optimize_map(10, cfg['mapping']['lr_first_factor'], 0, arg_dict["cur_gt_color"], arg_dict["cur_gt_depth"],
                             arg_dict["gt_cur_c2w"], arg_dict["keyframe_dict"], arg_dict["keyframe_list"],
                             arg_dict["cur_c2w"])
-
         time_ckp_2 = time.time()
         total_inf_time += (time_ckp_2 - time_ckp_1)
         total_running_time += (time_ckp_2 - time_ckp_0)

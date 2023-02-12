@@ -517,7 +517,6 @@ class Mapper(object):
                 c, self.decoders, batch_rays_d, batch_rays_o, batch_gt_depth, device, self.stage)
             regulation_loss = torch.abs(point_sigma).sum()
             loss += 0.0005*regulation_loss
-
             loss.backward(retain_graph=False)
 
             optimizer.step()

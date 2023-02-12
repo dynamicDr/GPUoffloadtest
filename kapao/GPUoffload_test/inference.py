@@ -83,7 +83,6 @@ if __name__ == '__main__':
 
     while i < max_inf_num:
         try:
-            print(f"processing {i + 1} / {max_inf_num}")
             time_ckp_0 = time.time()
             (pic_name, img, im0, _) = next(dataset_iterator)
             total_img_size += sys.getsizeof(img)
@@ -146,6 +145,7 @@ if __name__ == '__main__':
             i += 1
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time.time() - time_ckp_0
+            print(f"processing {i + 1} / {max_inf_num}")
         except StopIteration:
             dataset_iterator = iter(dataset)
 

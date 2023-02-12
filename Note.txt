@@ -23,4 +23,4 @@ python GPUoffload_test/inference.py data/gridworld/MazeMap_15x15_vr_2_4000_15_50
 ===========nice_slam=============
 cd GPUoffloadtest/nice-slam
 conda activate nice-slam
-python -W ignore GPUoffload_test/inference.py configs/Demo/demo.yaml --times 100
+python -W ignore GPUoffload_test/inference.py configs/Demo/demo.yaml --times 10
