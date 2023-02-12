@@ -147,8 +147,9 @@ if __name__ == '__main__':
             if data['use_kp_dets']:
                 filename += '_kp_obj'
             filename += '.png'
-            full_name = f"{args.output_path}/{filename}"
-            cv2.imwrite(full_name, im0)
+            # full_name = f"{args.output_path}/{filename}"
+            # print(full_name)
+            # cv2.imwrite(full_name, im0)
             i += 1
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time.time() - time_ckp_0
