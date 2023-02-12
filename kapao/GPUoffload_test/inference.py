@@ -1,6 +1,9 @@
 import sys
 import time
 from pathlib import Path
+
+from torch import nn
+
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[1].as_posix())  # add kapao/ to path
 
@@ -69,6 +72,9 @@ if __name__ == '__main__':
     print('Using device: {}'.format(device))
 
     model = attempt_load(args.weights, map_location=device)
+    for m in model.modules():
+        if isinstance(m, nn.Upsample):
+            m.recompute_scale_factor = None
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(args.imgsz, s=stride)  # check image size
     dataset = LoadImages(args.input_path, img_size=imgsz, stride=stride, auto=True)

@@ -18,7 +18,7 @@ cd GPUoffloadtest/calvin
 conda activate calvin
 python GPUoffload_test/inference.py data/gridworld/MazeMap_15x15_vr_2_4000_15_500/models/CALVINConv2d_k_60_i_3_h_150_adam_0.005_0.1_0.25_0207_205400_936487/epoch_004/checkpoint.pt -times 100
 注： -times 1000换成要测试的步数，如果多于1000重新循环。
-扩大了模型的新版： python GPUoffload_test/inference.py data/gridworld/MazeMap_15x15_vr_2_4000_15_500/models/CALVINConv2d_k_60_i_3_h_150_adam_0.005_0.1_0.25_0212_144821_559208/epoch_001/checkpoint.pt -times 100
+扩大了模型(x6)的新版： python GPUoffload_test/inference.py data/gridworld/MazeMap_15x15_vr_2_4000_15_500/models/CALVINConv2d_k_60_i_3_h_150_adam_0.005_0.1_0.25_0212_225551_961179/epoch_001/checkpoint.pt -times 100
 
 ===========nice_slam=============
 cd GPUoffloadtest/nice-slam
