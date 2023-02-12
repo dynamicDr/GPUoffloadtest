@@ -17,21 +17,22 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
         setup_agent(data=data, checkpoint=checkpoint, **config)
     total_input_size = total_running_time = total_inf_time = 0
     for i in range(n_evals):
-        running_start_time =time.time()
+        running_start_time = time.time()
         with open(f"GPUoffload_test/saved_obs/{i - i % 1000}/histories.pkl", 'rb') as file:
             histories = pickle.load(file)
         with open(f"GPUoffload_test/saved_obs/{i - i % 1000}/new_episodes.pkl", 'rb') as file:
             new_episodes = pickle.load(file)
+
         total_input_size += (sys.getsizeof(histories) + sys.getsizeof(new_episodes))
         inf_start_time = time.time()
         _, _, _ = agent.policy(histories, new_episodes, None)
         end_time = time.time()
         total_inf_time += (end_time - inf_start_time)
-        total_running_time+=(end_time - running_start_time)
+        total_running_time += (end_time - running_start_time)
         print(f"processing {i + 1} / {n_evals}")
 
     print(f"Average input size: {total_input_size / n_evals} byte,",
-          f"Average running time: {total_running_time/i}, "
+          f"Average running time: {total_running_time / i}, "
           f"Average inference time: {total_inf_time / n_evals}")
 
 

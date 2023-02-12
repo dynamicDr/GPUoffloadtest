@@ -57,7 +57,8 @@ class AgentTrainer:
                                  max_train_frames=self.max_train_frames, **self.env_config)
 
     def get_data_loader(self, dataset, is_train=True):
-        return DataLoader(dataset, batch_size=self.batch_size, shuffle=is_train,
+
+        return DataLoader(dataset, batch_size=1, shuffle=is_train,
                           num_workers=self.n_workers, drop_last=True, collate_fn=self.handler.collate)
 
     def train(self, epochs=None, buffer_size=None, n_rollouts=0, n_evals=100, save_pred=False, n_eval_train=None, **kwargs):
@@ -105,6 +106,8 @@ class AgentTrainer:
                                                              logger=logger) if val_loader else ({}, 0)
 
                 # epoch_save_dir = os.path.join(self.save_dir, f"epoch_{epoch:03d}_eval")
+                n_eval_train = n_evals = False
+
                 if n_eval_train:
                     experiences = self.get_experiences()
                     eval_train_stats, eval_train_dur = agent.rollouts(self.vecenv_train, n_episodes=n_eval_train, train=False,
@@ -130,7 +133,7 @@ class AgentTrainer:
 
                 sys.stdout.write("\r")
                 self.print_stats(**data)
-                self.save_best(data)
+                # self.save_best(data)
 
                 logger.append(data, epoch)
 

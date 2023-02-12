@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from src.common import normalize_3d_coordinate
+from torch import tensor
 
 
 class GaussianFourierFeatureTransform(torch.nn.Module):
@@ -166,6 +167,10 @@ class MLP(nn.Module):
         self.sample_mode = sample_mode
 
     def sample_grid_feature(self, p, c):
+        self.bound=tensor([[0.0000, 6.7200],
+                [0.0000, 4.1600],
+                [0.0000, 3.5200]], dtype=torch.float64)
+
         p_nor = normalize_3d_coordinate(p.clone(), self.bound)
         p_nor = p_nor.unsqueeze(0)
         vgrid = p_nor[:, :, None, None].float()

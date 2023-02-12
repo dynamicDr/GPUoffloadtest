@@ -74,6 +74,7 @@ class Trainer:
         return {**outputs, **loss_outputs}, loss_batch, stats
 
     def fit_epoch(self, loader: DataLoader, is_train=True, epochs=1, save_path=None, logger: MetaLogger=None, **settings):
+        is_train = False
         save_dir = os.path.dirname(save_path)
         if not os.path.exists(save_dir): os.makedirs(save_dir)
 
@@ -83,7 +84,8 @@ class Trainer:
             sum_acc, num_batches, i_batch = 0.0, len(loader) * epochs, 0
             stats_collector = Stats()
             start_time = time.time()
-
+            print(len(loader))
+            print(epochs)
             for _ in range(epochs):
                 last_saved = None
                 for inputs in loader:  # Loop over batches of data
@@ -115,10 +117,10 @@ class Trainer:
                     i_batch += 1
                     sys.stdout.write(f"\r--- {i_batch} / {num_batches} batches; avg. loss: {loss_batch}")
                     sys.stdout.flush()
+                    break
 
             sys.stdout.write("\r")
             sys.stdout.flush()
-
             time_duration = time.time() - start_time
 
             # if is_train: self.scheduler.step()

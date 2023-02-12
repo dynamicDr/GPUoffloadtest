@@ -123,12 +123,12 @@ class MemoryAgent(Agent):
         new_episodes = [len(episode) == 0 for episode in episodes]
 
         histories = self.handler.collate(processed_obsvs)
-        step = kwargs["step"]
-        os.makedirs(f"GPUoffload_test/saved_obs/{step}", exist_ok=True)
-        with open(f"GPUoffload_test/saved_obs/{step}/histories.pkl", 'wb+') as file:
-            pickle.dump(histories, file)
-        with open(f"GPUoffload_test/saved_obs/{step}/new_episodes.pkl", 'wb+') as file:
-            pickle.dump(new_episodes, file)
+        # step = kwargs["step"]
+        # os.makedirs(f"GPUoffload_test/saved_obs/{step}", exist_ok=True)
+        # with open(f"GPUoffload_test/saved_obs/{step}/histories.pkl", 'wb+') as file:
+        #     pickle.dump(histories, file)
+        # with open(f"GPUoffload_test/saved_obs/{step}/new_episodes.pkl", 'wb+') as file:
+        #     pickle.dump(new_episodes, file)
         self.actions, outputs, self.carrier = self.policy(histories, new_episodes, self.carrier)
 
         if save_pred:
@@ -232,9 +232,7 @@ class MemoryAgent(Agent):
 
     def policy(self, histories, new_episodes: List[bool], carrier: dict = None):
         if carrier is None: carrier = {}
-        # input 的 memory size；从history读文件开始，计算时间；GPU inference time
         outputs = self.trainer.predict(histories, is_train=False, inference=True, new_episodes=new_episodes, **carrier)
-        # =====
         outputs, carrier = self.handler.output_to_carrier(outputs)
         actions = self.trainer.model.action(**{**histories, **outputs}, explore=self.training)
         return self.handler.postproc_actions(actions), outputs, carrier

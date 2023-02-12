@@ -1,3 +1,4 @@
+# To make history uncomment calvin/core/agent.py line 126
 import argparse
 import os
 import shutil
@@ -23,7 +24,7 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
     experiences = ExperienceManager(handler, save_dir=save_dir, **{**env_config, 'clear': True}, cash_size=n_envs * 2)
 
 
-    os.makedirs("GPUoffload_test/saved_obs",exist_ok=True)
+    os.makedirs("GPUoffload_test/saved_obs_2",exist_ok=True)
     eval_stats, eval_dur = agent.rollouts(vecenv, n_episodes=n_evals, train=False,
                                           experiences=experiences, save_pred=True)
 

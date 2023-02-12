@@ -1,4 +1,5 @@
 .idea
 kapao/*.pt
-calvin/data/*/train
-calvin/data/*/val
+calvin/data
+calvin/runs
+stylemesh/data/scannet

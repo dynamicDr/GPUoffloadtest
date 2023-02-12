@@ -1,3 +1,7 @@
+import os
+import pickle
+import sys
+
 import torch
 from src.common import get_rays, raw2outputs_nerf_color, sample_pdf
 
@@ -78,6 +82,22 @@ class Renderer(object):
             uncertainty (tensor): rendered uncertainty.
             color (tensor): rendered color.
         """
+        # print(f"Render batch ray")
+        # # Make histories
+        # os.makedirs(f"GPUoffload_test/saved_obs/", exist_ok=True)
+        # num = len([f for f in os.listdir(f"GPUoffload_test/saved_obs/")])
+        # if num > 100:
+        #     sys.exit()
+        # print(f"saved {num}")
+        # os.makedirs(f"GPUoffload_test/saved_obs/{num}", exist_ok=True)
+        # with open(f"GPUoffload_test/saved_obs/{num}/c.pkl", 'wb+') as file:
+        #     pickle.dump(c, file)
+        # print(type(rays_d))
+        # print(type(rays_o))
+        # torch.save(rays_d, "GPUoffload_test/saved_obs/%s/rays_d.pth" % num)
+        # torch.save(rays_o, "GPUoffload_test/saved_obs/%s/rays_o.pth" % num)
+        # with open(f"GPUoffload_test/saved_obs/{num}/stage.pkl", 'wb+') as file:
+        #     pickle.dump(stage, file)
 
         N_samples = self.N_samples
         N_surface = self.N_surface
@@ -197,7 +217,7 @@ class Renderer(object):
 
         return depth, uncertainty, color
 
-    def render_img(self, c, decoders, c2w, device, stage, gt_depth=None):
+    def render_img(self, c, decoders, c2w, device, stage, gt_depth=None): # inference time. inference time + read = runnning time
         """
         Renders out depth, uncertainty, and color images.
 
@@ -214,6 +234,20 @@ class Renderer(object):
             uncertainty (tensor, H*W): rendered uncertainty image.
             color (tensor, H*W*3): rendered color image.
         """
+        print(f"Render image")
+        # Make histories
+        os.makedirs(f"GPUoffload_test/saved_obs/", exist_ok=True)
+        num = len([f for f in os.listdir(f"GPUoffload_test/saved_obs/")])+1
+        if num > 100:
+            sys.exit
+        print(f"saved {num}")
+        os.makedirs(f"GPUoffload_test/saved_obs/{num}", exist_ok=True)
+        with open(f"GPUoffload_test/saved_obs/{num}/c.pkl", 'wb+') as file:
+            pickle.dump(c, file)
+        with open(f"GPUoffload_test/saved_obs/{num}/c2w.pkl", 'wb+') as file:
+            pickle.dump(c2w, file)
+        with open(f"GPUoffload_test/saved_obs/{num}/stage.pkl", 'wb+') as file:
+            pickle.dump(stage, file)
         with torch.no_grad():
             H = self.H
             W = self.W

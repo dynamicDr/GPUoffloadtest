@@ -58,7 +58,9 @@ def setup_trainer(data=None, device="cuda", checkpoint=None, clip=None, **config
     factory = get_factory(domain)
     model_config = factory.model_config(dict(config), **env_config)
     model_config['device'] = device
+
     model, optimizer = create_model(**model_config)
+    print(model_config)
 
     meta = factory.meta(**env_config)
     handler = factory.handler(meta, **env_config)

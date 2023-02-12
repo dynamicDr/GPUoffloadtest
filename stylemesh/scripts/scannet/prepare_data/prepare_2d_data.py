@@ -11,7 +11,8 @@
 #
 # example usage:
 #    python prepare_2d_data.py --scannet_path data/scannetv2 --output_path data/scannetv2_images --export_label_images
-
+blender --background --factory-startup --python $HOME/background_job.py --text="Hello World" --render="/tmp/hello" --save="/tmp/hello.blend"
+blender --background --factory-startup --python $HOME/background_job.py --text="Hello World" --render="/tmp/hello" --save="/tmp/hello.blend"
 import argparse
 import os, sys
 import numpy as np
