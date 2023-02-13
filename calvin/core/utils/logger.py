@@ -1,7 +1,7 @@
 import os
 from typing import Tuple
 
-from overboard import Logger as OBLogger
+#from overboard import Logger as OBLogger
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -46,19 +46,19 @@ class TensorBoardLogger(Logger):
         self._logger.add_scalar(key, value, step)
 
 
-class OverboardLogger(Logger):
-    def _init_logger(self):
-        return OBLogger(self.save_dir, meta=self.config)
-
-    def append(self, data: dict, step):
-        self._logger.append(data)
+# class OverboardLogger(Logger):
+#     def _init_logger(self):
+#         return OBLogger(self.save_dir, meta=self.config)
+#
+#     def append(self, data: dict, step):
+#         self._logger.append(data)
 
 
 class MetaLogger(Logger):
     def __init__(self, save_dir, config, loggers: Tuple[str] = ("overboard", "tensorboard")):
         super(MetaLogger, self).__init__(save_dir, config)
         mapping = {
-            'overboard': OverboardLogger,
+        #    'overboard': OverboardLogger,
             'tensorboard': TensorBoardLogger
         }
         self._loggers = {name: mapping[name](save_dir, config) for name in loggers}
