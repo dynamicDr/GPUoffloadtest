@@ -46,26 +46,26 @@ class VGG(nn.Module):
 
     def forward(self, x, out_keys):
         out = {}
-        out['r11'] = F.relu(self.conv1_1(x))
-        out['r12'] = F.relu(self.conv1_2(out['r11']))
+        out['r11'] = F.relu(self.conv1_1(x) )
+        out['r12'] = F.relu(self.conv1_2(out['r11']) )
         out['p1'] = self.pool1(out['r12'])
-        out['r21'] = F.relu(self.conv2_1(out['p1']))
-        out['r22'] = F.relu(self.conv2_2(out['r21']))
+        out['r21'] = F.relu(self.conv2_1(out['p1']) )
+        out['r22'] = F.relu(self.conv2_2(out['r21']) )
         out['p2'] = self.pool2(out['r22'])
-        out['r31'] = F.relu(self.conv3_1(out['p2']))
-        out['r32'] = F.relu(self.conv3_2(out['r31']))
-        out['r33'] = F.relu(self.conv3_3(out['r32']))
-        out['r34'] = F.relu(self.conv3_4(out['r33']))
+        out['r31'] = F.relu(self.conv3_1(out['p2']) )
+        out['r32'] = F.relu(self.conv3_2(out['r31']) )
+        out['r33'] = F.relu(self.conv3_3(out['r32']) )
+        out['r34'] = F.relu(self.conv3_4(out['r33']) )
         out['p3'] = self.pool3(out['r34'])
-        out['r41'] = F.relu(self.conv4_1(out['p3']))
-        out['r42'] = F.relu(self.conv4_2(out['r41']))
-        out['r43'] = F.relu(self.conv4_3(out['r42']))
-        out['r44'] = F.relu(self.conv4_4(out['r43']))
+        out['r41'] = F.relu(self.conv4_1(out['p3']) )
+        out['r42'] = F.relu(self.conv4_2(out['r41']) )
+        out['r43'] = F.relu(self.conv4_3(out['r42']) )
+        out['r44'] = F.relu(self.conv4_4(out['r43']) )
         out['p4'] = self.pool4(out['r44'])
-        out['r51'] = F.relu(self.conv5_1(out['p4']))
-        out['r52'] = F.relu(self.conv5_2(out['r51']))
-        out['r53'] = F.relu(self.conv5_3(out['r52']))
-        out['r54'] = F.relu(self.conv5_4(out['r53']))
+        out['r51'] = F.relu(self.conv5_1(out['p4']) )
+        out['r52'] = F.relu(self.conv5_2(out['r51']) )
+        out['r53'] = F.relu(self.conv5_3(out['r52']) )
+        out['r54'] = F.relu(self.conv5_4(out['r53']) )
         out['p5'] = self.pool5(out['r54'])
         return {k: out[k] for k in out_keys}
 
@@ -330,14 +330,13 @@ class ContentAndStyleLoss(torch.nn.Module):
                     # 2) areas failed angle filter (bad angles) are stylized only with larger style image (stroke patterns are not as stretched out)
                     y_hat_failed_angle_filter = GramMatrix()(pyramid['p_failed_angle_filter'][p_index][layer])
                     if torch.sum(pyramid['m_failed_angle_filter'][p_index][layer]) > 0:
-                        l += self.style_weights[layer_index] * f * self.mse(y, y_hat_failed_angle_filter)
+                        l = l+ self.style_weights[layer_index] * f * self.mse(y, y_hat_failed_angle_filter)
 
                     # 1) areas passed angle filter (good angles) are stylized normally (with low-res style image and high res style image)
                     y_smaller = self.style_targets[layer_index][0]
                     if layer_index > 2:
-                        l += self.style_weights[layer_index] * f * self.mse(y_smaller, y_hat)
-
-                style_loss += l
+                        l = l + self.style_weights[layer_index] * f * self.mse(y_smaller, y_hat)
+                style_loss = style_loss + l
 
             # accumulate content loss over all layers
             for layer_index, layer in enumerate(self.content_layers):
@@ -345,6 +344,6 @@ class ContentAndStyleLoss(torch.nn.Module):
                 y_hat = pyramid['p'][p_index][layer]
                 f = pyramid['f'][p_index][layer]
                 l = self.content_weights[layer_index] * f * self.mse(y, y_hat)
-                content_loss += l
+                content_loss = content_loss + l
 
         return style_loss, content_loss, pyramid

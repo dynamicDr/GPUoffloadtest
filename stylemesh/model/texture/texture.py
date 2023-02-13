@@ -103,7 +103,7 @@ class HierarchicalNeuralTexture(nn.Module):
         reg = 0.0
 
         for i, layer in enumerate(self.layers):
-            reg += torch.mean(torch.pow(layer.data, 2.0)) * weights[i]
+            reg =reg+ torch.mean(torch.pow(layer.data, 2.0)) * weights[i]
 
         return reg
 

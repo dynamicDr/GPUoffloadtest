@@ -27,7 +27,7 @@ class ScanNet_DataModule(Abstract_DataModule):
                  index_repeat: int = 1,
                  verbose: bool = False):
 
-        root_paths = {
+        root_pathroot_paths = {
             "train": join(root_path, "train/images"),
             "val": join(root_path, "val/images"),
         }
@@ -201,6 +201,7 @@ class ScanNetDataset(Abstract_Dataset):
         """
         def load_folder(folder):
             if not os.path.exists(folder) or not os.path.isdir(folder):
+                Exception(f"{folder} does not exist.")
                 return [], []
 
             files = sorted(os.listdir(folder), key=lambda x: int(x.split(".")[0]))
@@ -251,7 +252,7 @@ class ScanNetDataset(Abstract_Dataset):
             return angles_npy
 
         # always return angle maps without pyramid_levels, because we only need one angle map anyways
-        uv_path = join(scene_path, "uv")
+        uv_path = join(scene_path, "uv_88.0")
         angles_npy = load_folder(uv_path)
         return angles_npy
 
@@ -316,7 +317,7 @@ class ScanNetDataset(Abstract_Dataset):
 
         mask = np.asarray(uvmap)
         mask_bool = mask[:, :, 0] != 0
-        mask_bool += mask[:, :, 1] != 0
+        mask_bool = mask_bool + mask[:, :, 1] != 0
         mask = mask_bool
 
         if depth is not None:

@@ -124,12 +124,19 @@ class Abstract_Dataset(Dataset, ABC):
                 depth = self.get_depth(scene_path)
                 uvs = self.get_uvs(scene_path)
                 angles = self.get_angles(scene_path)
-
                 extrinsics = self.get_extrinsics(scene_path)
                 intrinsics, image_size = self.get_intrinsics(scene_path)
                 intrinsics = [intrinsics for i in range(len(colors))]
                 image_size = [image_size for i in range(len(colors))]
-
+                print("Checking input data...==================================")
+                print("colors length > 0:", len(colors) > 0)
+                print("colors length == depth length:", len(colors) == len(depth))
+                print("uvs length > 0:", len(uvs) > 0)
+                print("all uvs have same length as colors:", all(len(colors) == len(uv) for uv in uvs))
+                print("uv_maps length == 0 or uv_maps length == uvs length:",
+                      len(uv_maps) == 0 or len(uv_maps) == len(uvs))
+                print("colors length == angles length:", len(colors) == len(angles))
+                print("colors length == extrinsics length:", len(colors) == len(extrinsics))
                 if len(colors) > 0 and len(colors) == len(depth) and \
                         len(uvs) > 0 and all(len(colors) == len(uv) for uv in uvs) and (
                         len(uv_maps) == 0 or len(uv_maps) == len(uvs)) and \
@@ -157,8 +164,7 @@ class Abstract_Dataset(Dataset, ABC):
                     scene_dict[scene]["angle_map"] = angles
 
                 elif self.verbose:
-                    print(
-                        f"Scene {scene_path} rendered incomplete --> is skipped. colors: {len(colors)}, uvs: {len(uvs)}, angles: {len(angles)}, extr: {len(extrinsics)}")
+                    print(f"Scene {scene_path} rendered incomplete --> is skipped. colors: {len(colors)}, len(uvs[0]): {len(uvs[0])}, angles: {angles}, extr: {len(extrinsics)}")
 
         assert (len(rgb_images) == len(angle_maps))
         assert (len(rgb_images) == len(extrinsics_matrices))
@@ -339,7 +345,7 @@ class Abstract_Dataset(Dataset, ABC):
             angle_guidance = angle
 
             # add all to result
-            result += (uv, mask, angle_guidance, angle_degrees)
+            result = result + (uv, mask, angle_guidance, angle_degrees)
 
         self.finalize_getitem(item)
         return result
@@ -431,42 +437,22 @@ class Abstract_DataModule(pl.LightningDataModule):
     def after_create_dataset(self, d, root_path):
         pass
 
-    def setup(self, stage: Optional[str] = None):
+    def setup(self, stage: Optional[str] = None, val_num = 10):
         # create datasets based on the specified path and further arguments
-        if isinstance(self.root_path, dict):
-            train_path = self.root_path["train"]
-            val_path = self.root_path["val"]
+        self.train_dataset = self.create_dataset(self.root_path)
+        self.val_dataset = self.create_dataset(self.root_path)
 
-            self.train_dataset = self.create_dataset(train_path)
-            self.val_dataset = self.create_dataset(val_path)
-        else:
-            self.train_dataset = self.create_dataset(self.root_path)
-            self.val_dataset = self.create_dataset(self.root_path)
+        # create train/val/test split
+        len = self.train_dataset.__len__()
+        indices = [i for i in range(len)]
+        train_split = int(self.split[0] * len)
 
-        # create train/val/test split from the loaded datasets based on the split_mode
-        if self.split_mode == "folder":
-            self.train_indices = [i for i in range(self.train_dataset.__len__())]
-            self.val_indices = [i for i in range(self.val_dataset.__len__())]
+        if self.shuffle:
+            np.random.shuffle(indices)
 
-            if self.shuffle:
-                np.random.shuffle(self.train_indices)
-                np.random.shuffle(self.val_indices)
-
-        else:
-            if isinstance(self.root_path, dict):
-                raise ValueError(
-                    f"Cannot use multiple root_path arguments (train/val) when split_mode is not 'folder'!")
-
-            # create train/val/test split
-            len = self.train_dataset.__len__()
-            indices = [i for i in range(len)]
-            train_split = int(self.split[0] * len)
-
-            if self.shuffle:
-                np.random.shuffle(indices)
-
-            self.train_indices = indices[:train_split]
-            self.val_indices = indices[train_split:]
+        self.train_indices = indices[:]
+        self.val_indices = indices[:val_num]
+        self.val_dataloader =self.val_dataloader()
 
     def train_dataloader(self):
         if self.sampler_mode == "sequential":
@@ -492,7 +478,7 @@ class Abstract_DataModule(pl.LightningDataModule):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=sampler)
 
     def test_dataloader(self):
-        raise NotImplementedError()
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=sampler)
 
 
 class RepeatingSampler(Sampler):

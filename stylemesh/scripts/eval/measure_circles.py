@@ -34,7 +34,7 @@ def filter_hsv(src):
     # Threshold of red in HSV space (end of H)
     lower_red = np.array([160, int(0.4 * 255), int(0.4 * 255)])
     upper_red = np.array([179, int(1.0 * 255), int(1.0 * 255)])
-    mask += cv2.inRange(hsv, lower_red, upper_red)
+    mask = mask+ cv2.inRange(hsv, lower_red, upper_red)
 
     # The black region in the mask has the value of 0,
     # so when multiplied with original image removes all non-blue regions
@@ -456,7 +456,7 @@ def main(opt):
         opt.verbose = i % 100000 == 0
 
         statistics, n = measure(f, depth, angle, coords, opt)
-        n_total += n
+        n_total = n_total+n
         for k in statistics.keys():
             if k not in statistics_total:
                 statistics_total[k] = 0

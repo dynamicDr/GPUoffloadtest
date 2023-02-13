@@ -3,11 +3,12 @@ import os
 import pickle
 import shutil
 import sys
+sys.path.append(".")
+
 import time
 from collections import deque
 from itertools import chain
 from sys import getsizeof as getsize
-sys.path.append(".")
 
 from core.utils.trainer_utils import setup_agent
 from core.env import VecEnv

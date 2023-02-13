@@ -303,7 +303,7 @@ class MatterportDataset(Abstract_Dataset):
 
         mask = np.asarray(uvmap)
         mask_bool = mask[:, :, 0] != 0
-        mask_bool += mask[:, :, 1] != 0
+        mask_bool = mask_bool + mask[:, :, 1] != 0
         mask = mask_bool
 
         mask = Image.fromarray(mask)
