@@ -56,6 +56,8 @@ def main():
             file_path = f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl"
             with open(file_path, 'rb') as file:
                 arg_dict[arg_name] = pickle.load(file)
+                if arg_name == "cur_c2w":
+                    arg_dict["cur_c2w"] = arg_dict["cur_c2w"].to(device="cuda")
                 total_input_size += os.stat(file_path).st_size
         time_ckp_1 = time.time()
         mapper.optimize_map(10, cfg['mapping']['lr_first_factor'], 0, arg_dict["cur_gt_color"], arg_dict["cur_gt_depth"],

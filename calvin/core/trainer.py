@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from core.model import Model
-from core.utils.logger import MetaLogger
+#from core.utils.logger import MetaLogger
 from core.utils.tensor_utils import to_numpy
 from core.utils.utils import Stats
 
@@ -73,7 +73,7 @@ class Trainer:
 
         return {**outputs, **loss_outputs}, loss_batch, stats
 
-    def fit_epoch(self, loader: DataLoader, is_train=True, epochs=1, save_path=None, logger: MetaLogger=None, **settings):
+    def fit_epoch(self, loader: DataLoader, is_train=True, epochs=1, save_path=None, **settings):
         is_train = False
         save_dir = os.path.dirname(save_path)
         if not os.path.exists(save_dir): os.makedirs(save_dir)
