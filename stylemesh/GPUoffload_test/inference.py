@@ -8,8 +8,6 @@ sys.path.append(".")
 from argparse import ArgumentParser
 
 from model.model import TextureOptimizationStyleTransferPipeline
-from data.scannet_single_scene_dataset import ScanNet_Single_Scene_DataModule
-from data.abstract_dataset import Abstract_DataModule
 from model.losses.rgb_transform import pre
 from model.losses.content_and_style_losses import ContentAndStyleLoss
 
@@ -38,42 +36,42 @@ def main(args):
     transform_uv = get_uv_transform()
 
     # construct splits manually from the three command args (easier than doing some command line magic)
-    splits = [0.8, 0.2]
+    # splits = [0.8, 0.2]
 
     # create lightning DataModule from requested Dataset
-    dm = ScanNet_Single_Scene_DataModule(root_path=args.root_path,
-                                         transform_rgb=transform_rgb,
-                                         transform_label=transform_label,
-                                         transform_uv=transform_uv,
-                                         resize_size=args.resize_size,
-                                         pyramid_levels=args.pyramid_levels,
-                                         min_pyramid_depth=args.min_pyramid_depth,
-                                         min_pyramid_height=args.min_pyramid_height,
-                                         scene=args.scene,
-                                         min_images=args.min_images,
-                                         max_images=args.max_images,
-                                         verbose=True,
-                                         shuffle=args.shuffle,
-                                         sampler_mode=args.sampler_mode,
-                                         index_repeat=args.index_repeat,
-                                         split=splits,
-                                         split_mode=args.split_mode,
-                                         batch_size=args.batch_size,
-                                         num_workers=args.num_workers)
+    # dm = ScanNet_Single_Scene_DataModule(root_path=args.root_path,
+    #                                      transform_rgb=transform_rgb,
+    #                                      transform_label=transform_label,
+    #                                      transform_uv=transform_uv,
+    #                                      resize_size=args.resize_size,
+    #                                      pyramid_levels=args.pyramid_levels,
+    #                                      min_pyramid_depth=args.min_pyramid_depth,
+    #                                      min_pyramid_height=args.min_pyramid_height,
+    #                                      scene=args.scene,
+    #                                      min_images=args.min_images,
+    #                                      max_images=args.max_images,
+    #                                      verbose=True,
+    #                                      shuffle=args.shuffle,
+    #                                      sampler_mode=args.sampler_mode,
+    #                                      index_repeat=args.index_repeat,
+    #                                      split=splits,
+    #                                      split_mode=args.split_mode,
+    #                                      batch_size=args.batch_size,
+    #                                      num_workers=args.num_workers)
     # this sets up the lightning DataModule, i.e. creates train/val/test splits
-    dm.prepare_data()
-    dm.setup(val_num=inference_num)
+    # dm.prepare_data()
+    # dm.setup(val_num=inference_num)
 
     # save all lightning parameters in this dict and add the train/val/test indices for future reproducibility
-    selected_scene = dm.train_dataset.scene if hasattr(dm.train_dataset, "scene") else ""
-    extra_args = {
-        **vars(args),
-        "indices": {
-            "train": dm.train_indices,
-            "val": dm.val_indices,
-        },
-        "selected_scene": selected_scene
-    }
+    # selected_scene = dm.train_dataset.scene if hasattr(dm.train_dataset, "scene") else ""
+    # extra_args = {
+    #     **vars(args),
+    #     "indices": {
+    #         "train": dm.train_indices,
+    #         "val": dm.val_indices,
+    #     },
+    #     "selected_scene": selected_scene
+    # }
 
     if args.loss_weights:
         args.loss_weights = {l[0]: float(l[1]) for l in args.loss_weights}
@@ -125,7 +123,7 @@ def main(args):
         decay_gamma=args.decay_gamma,
         decay_step_size=args.decay_step_size,
         loss_weights=args.loss_weights,
-        extra_args=extra_args,
+        extra_args={},
 
         # logging parameters
         log_images_nth=args.log_images_nth,
@@ -165,7 +163,7 @@ if __name__ == '__main__':
     parser.add_argument('--matterport_region_index', default=0, type=int)
     parser.add_argument('--train_split', default=0.8, type=float)
     parser.add_argument('--val_split', default=0.2, type=float)
-    parser.add_argument('--split_mode', default="sequential", type=str, choices=Abstract_DataModule.split_modes)
+    parser.add_argument('--split_mode', default="sequential", type=str)
     parser.add_argument('--scene', default="")
     parser.add_argument('--max_images', default=-1, type=int)
     parser.add_argument('--min_images', default=1000, type=int)
@@ -184,7 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_images_nth', default=-1, type=int)
     parser.add_argument('--save_texture', default=False, action="store_true")
     parser.add_argument('--shuffle', default=False, action="store_true")
-    parser.add_argument('--sampler_mode', default="repeat", type=str, choices=Abstract_DataModule.sampler_modes)
+    parser.add_argument('--sampler_mode', default="repeat", type=str)
     parser.add_argument('--index_repeat', default=1, type=int)
 
     # add all style transfer flags
