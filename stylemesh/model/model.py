@@ -102,13 +102,13 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
                 self.loss_weights[loss] = TextureOptimizationStyleTransferPipeline.default_loss_weights[loss]
                 print(f"No weight specified for the '{loss}' loss. Setting it to {self.loss_weights[loss]}")
 
-        self.vgg_gatys_model_path = vgg_gatys_model_path
-        self.vgg_loss = ContentAndStyleLoss(vgg_gatys_model_path,
-                                             style_layers, content_layers,
-                                             style_weights, content_weights,
-                                             angle_threshold=angle_threshold,
-                                             style_pyramid_mode=style_pyramid_mode,
-                                             gram_mode=gram_mode)
+        # self.vgg_gatys_model_path = vgg_gatys_model_path
+        # self.vgg_loss = ContentAndStyleLoss(vgg_gatys_model_path,
+        #                                      style_layers, content_layers,
+        #                                      style_weights, content_weights,
+        #                                      angle_threshold=angle_threshold,
+        #                                      style_pyramid_mode=style_pyramid_mode,
+        #                                      gram_mode=gram_mode)
 
         # --------------------
         # OTHER PREPARATION
@@ -150,7 +150,7 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
             if len(self.style_image.shape) != 4:
                 # add batch dimension
                 self.style_image = self.style_image.repeat(image.shape[0], 1, 1, 1).type_as(image)
-                self.vgg_loss.set_style_image(self.style_image)
+                # self.vgg_loss.set_style_image(self.style_image)
 
         # TEXTURE SAMPLING
         pred_pyramid = []
