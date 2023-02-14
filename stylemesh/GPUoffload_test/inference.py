@@ -11,7 +11,7 @@ from data.abstract_dataset import Abstract_DataModule
 from model.losses.rgb_transform import pre
 from model.losses.content_and_style_losses import ContentAndStyleLoss
 
-from pytorch_lightning.trainer import Trainer
+from pytorch_lightning import Trainer
 from scripts.textures.video_from_files import main as render_video
 from scripts.eval.eval_image_folders import main as eval_image_folders
 from scripts.scannet.render_mipmap_scannet import main as render_mipmap_scannet
@@ -138,15 +138,22 @@ def main(args):
         save_texture=args.save_texture,
         texture_dir=log_dir)
 
-    # start the training loop (creates train/val logs; save texture every epoch if specified;
-    start_time = time.time()
-    trainer.validate(model = model, ckpt_path="data/vgg_conv.pth",dataloaders=dm.val_dataloader)
-    end_time = time.time()
+    total_input_size = total_running_time = total_inf_time = 0
+    i=0
+    dataloader = dm.val_dataloader
+    for data in dataloader:
+        i+=1
+        print(f"processing {i} / {inference_num}")
+        start_time = time.time()
+        model(data)
+        total_inf_time += time.time()-start_time
 
-
-    print(f"Average input size: {None} byte, "
+    for data_type in dm.data_path:
+        for i in range(inference_num):
+                total_input_size += os.stat(data_type[i]).st_size
+    print(f"Average input size: {total_input_size  / inference_num} byte, "
           f"Average running time: {None}, "
-          f"Average inference time: {(end_time-start_time) / inference_num} ")
+          f"Average inference time: { total_inf_time / inference_num}")
 
 
 

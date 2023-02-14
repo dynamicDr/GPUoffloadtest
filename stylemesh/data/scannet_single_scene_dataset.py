@@ -13,6 +13,7 @@ from data.abstract_dataset import Abstract_DataModule
 
 
 class ScanNet_Single_Scene_DataModule(Abstract_DataModule):
+
     def __init__(self,
                  root_path: str,
                  batch_size: int = 32,
@@ -53,16 +54,17 @@ class ScanNet_Single_Scene_DataModule(Abstract_DataModule):
                                      index_repeat=index_repeat,
                                      split=split,
                                      split_mode=split_mode)
-
+        self.data_path = None
         self.min_pyramid_depth = min_pyramid_depth
         self.min_pyramid_height = min_pyramid_height
         self.pyramid_levels = pyramid_levels
-
+        print(super())
     def after_create_dataset(self, d, root_path):
         if isinstance(d, ScanNetDataset):
             d.set_uv_pyramid_mode(self.min_pyramid_depth, self.min_pyramid_height)
             d.set_pyramid_levels(self.pyramid_levels)
-            d.create_data()
+            data_path = d.create_data()
+            self.data_path = data_path
 
 
 class ScanNet_Single_House_Dataset(ScanNetDataset):
@@ -99,13 +101,14 @@ class ScanNet_Single_House_Dataset(ScanNetDataset):
     def create_data(self):
         self.scene_dict = self.parse_scenes()[-1]
         self.rgb_images, self.extrinsics, self.intrinsics, self.intrinsic_image_sizes, self.depth_images, self.uv_maps, self.angle_maps, self.size, self.scene = self.get_scene(self.input_scene, self.min_images, self.max_images)
-
-        print(f"Using scene: {self.scene}. Input was: {self.input_scene}")
-
         # use this to finally set the self.uvs_npy, self.angle_npy and self.rendered_depth attributes correctly to the state of the chosen scene
-        self.get_depth(join(self.root_path, self.scene))
-        self.get_uvs(join(self.root_path, self.scene))
-        self.get_angles(join(self.root_path, self.scene))
+        depth = self.get_depth(join(self.root_path, self.scene))
+        uvs = self.get_uvs(join(self.root_path, self.scene))
+        angles = self.get_angles(join(self.root_path, self.scene))
+        list = [self.rgb_images, self.extrinsics,depth,angles]
+        for uv in uvs:
+            list.append(uv)
+        return list
 
     def get_scene(self, scene, min_images, max_images):
         items = self.get_scene_items(scene)

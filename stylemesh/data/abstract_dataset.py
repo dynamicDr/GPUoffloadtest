@@ -1,3 +1,5 @@
+import sys
+
 import torchvision
 import torch
 import numpy as np
@@ -45,9 +47,13 @@ class Abstract_Dataset(Dataset, ABC):
 
         # create data for this Dataset
         self.create_data()
+        self.data_size = []
 
     def create_data(self):
         self.rgb_images, self.uv_maps, self.angle_maps, self.extrinsics, self.intrinsics, self.intrinsic_image_sizes, self.depth_images, self.size, self.scene_dict = self.parse_scenes()
+
+    def get_data_size(self):
+        return self.data_size
 
     @abstractmethod
     def get_scenes(self):
@@ -108,9 +114,9 @@ class Abstract_Dataset(Dataset, ABC):
         scene_dict = {}
 
         scenes = self.get_scenes()
-        if self.verbose:
-            print("Collecting images...")
-            scenes = tqdm(scenes)
+        # if self.verbose:
+        #     print("Collecting images...")
+        #     scenes = tqdm(scenes)
 
         for scene in scenes:
             scene_path = join(self.root_path, scene)
@@ -128,15 +134,6 @@ class Abstract_Dataset(Dataset, ABC):
                 intrinsics, image_size = self.get_intrinsics(scene_path)
                 intrinsics = [intrinsics for i in range(len(colors))]
                 image_size = [image_size for i in range(len(colors))]
-                print("Checking input data...==================================")
-                print("colors length > 0:", len(colors) > 0)
-                print("colors length == depth length:", len(colors) == len(depth))
-                print("uvs length > 0:", len(uvs) > 0)
-                print("all uvs have same length as colors:", all(len(colors) == len(uv) for uv in uvs))
-                print("uv_maps length == 0 or uv_maps length == uvs length:",
-                      len(uv_maps) == 0 or len(uv_maps) == len(uvs))
-                print("colors length == angles length:", len(colors) == len(angles))
-                print("colors length == extrinsics length:", len(colors) == len(extrinsics))
                 if len(colors) > 0 and len(colors) == len(depth) and \
                         len(uvs) > 0 and all(len(colors) == len(uv) for uv in uvs) and (
                         len(uv_maps) == 0 or len(uv_maps) == len(uvs)) and \
