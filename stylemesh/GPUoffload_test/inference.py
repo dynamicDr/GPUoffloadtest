@@ -140,34 +140,25 @@ def main(args):
         save_texture=args.save_texture,
         texture_dir=log_dir)
 
-    # # start the training loop (creates train/val logs; save texture every epoch if specified;
-    # start_time = time.time()
-    # trainer.validate(model = model, ckpt_path="data/vgg_conv.pth",dataloaders=dm.val_dataloader)
-    # end_time = time.time()
-
-    total_input_size = total_running_time = total_inf_time = 0
+    total_input_size = total_inf_time = 0
     i=0
     dataloader = dm.val_dataloader
+    start_running_time = time.time()
     for data in dataloader:
         i+=1
         print(f"processing {i} / {inference_num}")
-        start_time = time.time()
-        # print(type(data))
-        # print(len(data))
-        for j in range(13):
+        for j in range(len(data)):
             if isinstance(data[j],torch.Tensor):
                 total_input_size += data[j].element_size() * data[j].numel()
             else:
                 for t in data[j]:
                     total_input_size += t.element_size() * t.numel()
+        start_time = time.time()
         model(data)
-        total_inf_time += time.time()-start_time
-
-    # for data_type in dm.data_path:
-    #     for i in range(inference_num):
-    #             total_input_size += os.stat(data_type[i]).st_size
+        total_inf_time += (time.time()-start_time)
+    end_running_time = time.time()
     print(f"Average input size: {total_input_size  / inference_num} byte, "
-          f"Average running time: {None}, "
+          f"Average running time: {(end_running_time-start_running_time) / inference_num}, "
           f"Average inference time: { total_inf_time / inference_num}")
 
 
