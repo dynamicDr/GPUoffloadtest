@@ -1,3 +1,4 @@
+import pickle
 import sys
 import time
 
@@ -8,19 +9,13 @@ from argparse import ArgumentParser
 
 from model.model import TextureOptimizationStyleTransferPipeline
 from data.scannet_single_scene_dataset import ScanNet_Single_Scene_DataModule
-from data.matterport_single_scene_dataset import Matterport_Single_Scene_DataModule
 from data.abstract_dataset import Abstract_DataModule
 from model.losses.rgb_transform import pre
 from model.losses.content_and_style_losses import ContentAndStyleLoss
 
 from pytorch_lightning import Trainer
-from scripts.textures.video_from_files import main as render_video
-from scripts.eval.eval_image_folders import main as eval_image_folders
-from scripts.scannet.render_mipmap_scannet import main as render_mipmap_scannet
-from scripts.matterport.render_mipmap_matterport import main as render_mipmap_matterport
 
 import os
-from argparse import Namespace
 
 from model.texture.utils import get_rgb_transform, get_uv_transform, get_label_transform
 
@@ -31,11 +26,10 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 
 def main(args):
-
     # create normal trainer (joint training)
     trainer = Trainer.from_argparse_args(args)
     log_dir = join(trainer.logger.save_dir, f"lightning_logs/version_{trainer.logger.version}")
-    inference_num =args.times
+    inference_num = args.times
     transform_rgb = Compose([
         get_rgb_transform(),
         pre()
@@ -48,27 +42,27 @@ def main(args):
 
     # create lightning DataModule from requested Dataset
     dm = ScanNet_Single_Scene_DataModule(root_path=args.root_path,
-                                             transform_rgb=transform_rgb,
-                                             transform_label=transform_label,
-                                             transform_uv=transform_uv,
-                                             resize_size=args.resize_size,
-                                             pyramid_levels=args.pyramid_levels,
-                                             min_pyramid_depth=args.min_pyramid_depth,
-                                             min_pyramid_height=args.min_pyramid_height,
-                                             scene=args.scene,
-                                             min_images=args.min_images,
-                                             max_images=args.max_images,
-                                             verbose=True,
-                                             shuffle=args.shuffle,
-                                             sampler_mode=args.sampler_mode,
-                                             index_repeat=args.index_repeat,
-                                             split=splits,
-                                             split_mode=args.split_mode,
-                                             batch_size=args.batch_size,
-                                             num_workers=args.num_workers)
+                                         transform_rgb=transform_rgb,
+                                         transform_label=transform_label,
+                                         transform_uv=transform_uv,
+                                         resize_size=args.resize_size,
+                                         pyramid_levels=args.pyramid_levels,
+                                         min_pyramid_depth=args.min_pyramid_depth,
+                                         min_pyramid_height=args.min_pyramid_height,
+                                         scene=args.scene,
+                                         min_images=args.min_images,
+                                         max_images=args.max_images,
+                                         verbose=True,
+                                         shuffle=args.shuffle,
+                                         sampler_mode=args.sampler_mode,
+                                         index_repeat=args.index_repeat,
+                                         split=splits,
+                                         split_mode=args.split_mode,
+                                         batch_size=args.batch_size,
+                                         num_workers=args.num_workers)
     # this sets up the lightning DataModule, i.e. creates train/val/test splits
     dm.prepare_data()
-    dm.setup(val_num = inference_num)
+    dm.setup(val_num=inference_num)
 
     # save all lightning parameters in this dict and add the train/val/test indices for future reproducibility
     selected_scene = dm.train_dataset.scene if hasattr(dm.train_dataset, "scene") else ""
@@ -80,9 +74,7 @@ def main(args):
         },
         "selected_scene": selected_scene
     }
-    # parse args.loss_weights into a dictionary.
-    # format from commandline is for example: [['image', '1.0'], ['texture', '1.0']]
-    # required format by the model is: {'image': 1.0, 'texture': 1.0}
+
     if args.loss_weights:
         args.loss_weights = {l[0]: float(l[1]) for l in args.loss_weights}
 
@@ -139,13 +131,11 @@ def main(args):
         log_images_nth=args.log_images_nth,
         save_texture=args.save_texture,
         texture_dir=log_dir)
-
     total_input_size = total_inf_time = 0
-    i=0
-    dataloader = dm.val_dataloader
     start_running_time = time.time()
-    for data in dataloader:
-        i+=1
+    for i in range(inference_num):
+        with open(f"GPUoffload_test/saved_obs/{i+1}.pkl", 'rb') as file:
+            data = pickle.load(file)
         print(f"processing {i} / {inference_num}")
         for j in range(len(data)):
             if isinstance(data[j],torch.Tensor):
