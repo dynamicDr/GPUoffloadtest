@@ -97,11 +97,11 @@ if __name__ == '__main__':
             img = img / 255.0  # 0 - 255 to 0.0 - 1.0
             if len(img.shape) == 3:
                 img = img[None]  # expand for batch dim
-
+            img = img.to(device)
             time_ckp_1 = time.time()
 
             out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
-
+            print("===================>device: ",next(model.parameters()).device)
             time_ckp_2 = time.time()
 
 
@@ -147,9 +147,6 @@ if __name__ == '__main__':
             if data['use_kp_dets']:
                 filename += '_kp_obj'
             filename += '.png'
-            # full_name = f"{args.output_path}/{filename}"
-            # print(full_name)
-            # cv2.imwrite(full_name, im0)
             i += 1
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time.time() - time_ckp_0

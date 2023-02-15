@@ -29,6 +29,9 @@ class NICE_SLAM():
         if torch.cuda.is_available() is False:
             self.cfg['mapping']['device'] = "cpu"
             self.cfg['tracking']['device'] = "cpu"
+        else:
+            self.cfg['mapping']['device'] = "cuda:0"
+            self.cfg['tracking']['device'] = "cuda:0"
         self.args = args
         self.nice = args.nice
 

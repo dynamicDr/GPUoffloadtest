@@ -3,6 +3,9 @@ import os
 import pickle
 import shutil
 import sys
+
+import torch
+
 sys.path.append(".")
 
 import time
@@ -63,7 +66,7 @@ from collections import deque
 #
 
 
-def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None, split=None, **config):
+def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None, split=None,device = None, **config):
     env_config, meta, handler, trainer, agent, init_env = \
         setup_agent(data=data, checkpoint=checkpoint, **config)
     total_input_size = total_running_time = total_inf_time = 0
@@ -79,6 +82,7 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
             total_input_size += os.stat(file_path).st_size
         inf_start_time = time.time()
         _, _, _ = agent.policy(histories, new_episodes, None)
+
         end_time = time.time()
         total_inf_time += (end_time - inf_start_time)
         total_running_time += (end_time - running_start_time)

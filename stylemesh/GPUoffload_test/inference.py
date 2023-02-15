@@ -93,6 +93,7 @@ def main(args):
 
     style_image = ToTensor()(style_image)
     style_image = pre()(style_image)
+    device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
 
     # create model from all provided arguments
     model = TextureOptimizationStyleTransferPipeline(
@@ -128,7 +129,7 @@ def main(args):
         # logging parameters
         log_images_nth=args.log_images_nth,
         save_texture=args.save_texture,
-        texture_dir=log_dir)
+        texture_dir=log_dir).to(device)
     total_input_size = total_inf_time = 0
     start_running_time = time.time()
     for i in range(inference_num):
@@ -142,7 +143,9 @@ def main(args):
                 for t in data[j]:
                     total_input_size += t.element_size() * t.numel()
         start_time = time.time()
+        print("===================>device: ", next(model.parameters()).device)
         model(data)
+
         total_inf_time += (time.time()-start_time)
     end_running_time = time.time()
     print(f"Average input size: {total_input_size  / inference_num} byte, "
