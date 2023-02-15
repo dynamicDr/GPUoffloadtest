@@ -76,6 +76,7 @@ def get_rays_from_uv(i, j, c2w, H, W, fx, fy, cx, cy, device):
     Get corresponding rays from input uv.
 
     """
+    print("---------------",device)
     if isinstance(c2w, np.ndarray):
         c2w = torch.from_numpy(c2w).to(device)
 
