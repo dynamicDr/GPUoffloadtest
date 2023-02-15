@@ -52,7 +52,7 @@ def main():
         time_ckp_0 = time.time()
         arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
         arg_dict = {}
-        device = (slam.shared_decoders.parameters()).device
+        device = next(slam.shared_decoders.parameters()).device
         print("===================>device: ", device)
         for arg_name in arg_names:
             file_path = f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl"
