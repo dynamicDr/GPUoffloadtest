@@ -82,7 +82,7 @@ def get_rays_from_uv(i, j, c2w, H, W, fx, fy, cx, cy, device):
 
     dirs = torch.stack(
         [(i-cx)/fx, -(j-cy)/fy, -torch.ones_like(i)], -1).to(device)
-    dirs = dirs.reshape(-1, 1, 3)
+    dirs = dirs.reshape(-1, 1, 3).to(device)
     # Rotate ray directions from camera frame to the world frame
     # dot product, equals to: [c2w.dot(dir) for dir in dirs]
     rays_d = torch.sum(dirs * c2w[:3, :3], -1)
