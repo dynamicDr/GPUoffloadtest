@@ -139,9 +139,11 @@ def main(args):
         for j in range(len(data)):
             if isinstance(data[j],torch.Tensor):
                 total_input_size += data[j].element_size() * data[j].numel()
+                data[j] = data[j].to(device)
             else:
                 for t in data[j]:
                     total_input_size += t.element_size() * t.numel()
+                    t = t.to(device)
         start_time = time.time()
         print("===================>device: ", next(model.parameters()).device)
         model(data)
