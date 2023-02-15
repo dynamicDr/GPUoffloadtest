@@ -52,13 +52,18 @@ def main():
         time_ckp_0 = time.time()
         arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
         arg_dict = {}
+        device = (slam.shared_decoders.parameters()).device
+        print("===================>device: ", device)
         for arg_name in arg_names:
             file_path = f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl"
             with open(file_path, 'rb') as file:
                 arg_dict[arg_name] = pickle.load(file)
+                if isinstance(arg_dict[arg_name],torch.Tensor):
+                    arg_dict[arg_name].to(device)
                 total_input_size += os.stat(file_path).st_size
-        print("===================>device: ", next(slam.shared_decoders.parameters()).device)
+
         time_ckp_1 = time.time()
+
         mapper.optimize_map(10, cfg['mapping']['lr_first_factor'], 0, arg_dict["cur_gt_color"], arg_dict["cur_gt_depth"],
                             arg_dict["gt_cur_c2w"], arg_dict["keyframe_dict"], arg_dict["keyframe_list"],
                             arg_dict["cur_c2w"])
