@@ -146,7 +146,7 @@ def main(args):
                     t = t.to(device)
         start_time = time.time()
         print("===================>device: ", next(model.parameters()).device)
-        model(data)
+        model(data,device)
 
         total_inf_time += (time.time()-start_time)
     end_running_time = time.time()

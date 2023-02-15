@@ -140,12 +140,14 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
         self.train_epoch_end = False
         self.val_epoch_end = False
 
-    def forward(self, x):
+    def forward(self, x, device):
         # input is: (rgb, extrinsics, intrinsics, depth,
         #               depth_level, rounded_depth_level, other_depth_level, depth_level_interpolation_weight,
         #               idx_item, uvs, mask, angle_guidance, angle_degrees)
-        image, extrinsics, _, _, _, _, _, _, _, uv_map, _, _, _ = x
 
+        image, extrinsics, _, _, _, _, _, _, _, uv_map, _, _, _ = x
+        image = image.to(device)
+        extrinsics = extrinsics.to(device)
         if self.style_image.shape != image.shape:
             if len(self.style_image.shape) != 4:
                 # add batch dimension
@@ -155,6 +157,7 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
         # TEXTURE SAMPLING
         pred_pyramid = []
         for v in uv_map:
+            v = v.to(device)
             screen_space_texture = self.texture(v)
             pred_pyramid.append(screen_space_texture)
 
