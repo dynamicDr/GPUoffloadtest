@@ -86,7 +86,7 @@ if __name__ == '__main__':
     total_img_size = 0
     total_running_time = 0
     total_inf_time = 0
-
+    skip = 0
     while i < max_inf_num:
         try:
             time_ckp_0 = time.time()
@@ -99,14 +99,15 @@ if __name__ == '__main__':
                 img = img[None]  # expand for batch dim
             img = img.to(device)
             time_ckp_1 = time.time()
-
             out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
             print("===================>device: ",next(model.parameters()).device)
             time_ckp_2 = time.time()
-
+            i += 1
+            print(f"processing {i + 1} / {max_inf_num}")
 
             person_dets, kp_dets = run_nms(data, out)
-
+            if(len(person_dets[0])==0):
+                continue
 
             if args.bbox:
                 bboxes = scale_coords(img.shape[2:], person_dets[0][:, :4], im0.shape[:2]).round().cpu().numpy()
@@ -147,10 +148,10 @@ if __name__ == '__main__':
             if data['use_kp_dets']:
                 filename += '_kp_obj'
             filename += '.png'
-            i += 1
+
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time.time() - time_ckp_0
-            print(f"processing {i + 1} / {max_inf_num}")
+
         except StopIteration:
             dataset_iterator = iter(dataset)
 
