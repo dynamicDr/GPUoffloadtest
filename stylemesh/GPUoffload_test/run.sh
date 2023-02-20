@@ -22,4 +22,4 @@ python ${CURRENT_DIR}/inference.py --root_path data/sample_scannet \
 --pyramid_levels 4 \
 --min_pyramid_depth 0.25 \
 --min_pyramid_height 256 \
---times 10
+--times 100
