@@ -88,12 +88,10 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
         end_time = time.time()
         
         print(f"processing {i + 1} / {n_evals}")
-        if i==0:
-            continue
         total_inf_time += (end_time - inf_start_time)
         total_running_time += (end_time - running_start_time)
-        print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/i*1000:.2f} ms (GPU computation time on robot)")
-        print(f"Service time : {(end_time - running_start_time)*1000:.2f} ms, average :{total_running_time/i*1000:.2f} ms")
+        print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
+        print(f"Service time : {(end_time - running_start_time)*1000:.2f} ms, average :{total_running_time/(i+1)*1000:.2f} ms")
 
 
 
