@@ -53,7 +53,7 @@ def main():
         arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
         arg_dict = {}
         device = next(slam.shared_decoders.parameters()).device
-        print("===================>device: ", device)
+        # print("===================>device: ", device)
         for arg_name in arg_names:
             file_path = f"GPUoffload_test/saved_obs/{i - i % file_num}/{arg_name}.pkl"
             with open(file_path, 'rb') as file:
@@ -68,13 +68,11 @@ def main():
                             arg_dict["gt_cur_c2w"], arg_dict["keyframe_dict"], arg_dict["keyframe_list"],
                             arg_dict["cur_c2w"])
         time_ckp_2 = time.time()
+        print(f"processing {i + 1} / {n_steps}")
         total_inf_time += (time_ckp_2 - time_ckp_1)
         total_running_time += (time_ckp_2 - time_ckp_0)
-        print(f"processing {i + 1} / {n_steps}")
-
-    print(f"Average input size: {total_input_size / n_steps} byte,",
-          f"Average running time: {total_running_time / n_steps}, "
-          f"Average inference time: {total_inf_time / n_steps}")
+        print(f"T_robot : {(time_ckp_2 - time_ckp_1)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
+        print(f"Service time : {(time_ckp_2 - time_ckp_0)*1000:.2f} ms, average :{total_running_time/(i+1)*1000:.2f} ms")
 
 
 if __name__ == '__main__':
