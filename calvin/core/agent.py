@@ -235,5 +235,5 @@ class MemoryAgent(Agent):
         outputs = self.trainer.predict(histories, is_train=False, inference=True, new_episodes=new_episodes, **carrier)
         outputs, carrier = self.handler.output_to_carrier(outputs)
         actions = self.trainer.model.action(**{**histories, **outputs}, explore=self.training)
-        print("===================>device: ", next(self.trainer.model.parameters()).device)
+        # print("===================>device: ", next(self.trainer.model.parameters()).device)
         return self.handler.postproc_actions(actions), outputs, carrier

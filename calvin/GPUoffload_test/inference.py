@@ -83,13 +83,15 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
         inf_start_time = time.time()
         _, _, _ = agent.policy(histories, new_episodes, None)
         end_time = time.time()
+        
+        print(f"processing {i + 1} / {n_evals}")
+        if i==0:
+            continue
         total_inf_time += (end_time - inf_start_time)
         total_running_time += (end_time - running_start_time)
-        print(f"processing {i + 1} / {n_evals}")
+        print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/i*1000:.2f} ms (GPU computation time on robot)")
+        print(f"Service time : {(end_time - running_start_time)*1000:.2f} ms, average :{total_running_time/i*1000:.2f} ms")
 
-    print(f"Average input size: {total_input_size / n_evals} byte,",
-          f"Average running time: {total_running_time / i}, "
-          f"Average inference time: {total_inf_time / n_evals}")
 
 
 def add_eval_args(parser):
