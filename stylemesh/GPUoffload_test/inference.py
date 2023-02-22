@@ -3,7 +3,7 @@ import sys
 import time
 
 import torch
-
+import random
 sys.path.append(".")
 from argparse import ArgumentParser
 
@@ -130,12 +130,14 @@ def main(args):
         log_images_nth=args.log_images_nth,
         save_texture=args.save_texture,
         texture_dir=log_dir).to(device)
-    total_input_size = total_inf_time = 0
-    start_running_time = time.time()
+    total_input_size = total_running_time = total_inf_time = 0
+    idx = list(range(inference_num))
+    random.shuffle(idx)
     for i in range(inference_num):
-        with open(f"GPUoffload_test/saved_obs/{i+1}.pkl", 'rb') as file:
+        running_start_time = time.time()
+        with open(f"GPUoffload_test/saved_obs/{idx[i]}.pkl", 'rb') as file:
             data = pickle.load(file)
-        print(f"processing {i} / {inference_num}")
+        print(f"processing {i+1} / {inference_num}")
         for j in range(len(data)):
             if isinstance(data[j],torch.Tensor):
                 total_input_size += data[j].element_size() * data[j].numel()
@@ -144,15 +146,16 @@ def main(args):
                 for t in data[j]:
                     total_input_size += t.element_size() * t.numel()
                     t = t.to(device)
-        start_time = time.time()
-        print("===================>device: ", next(model.parameters()).device)
+        inf_start_time = time.time()
+        # print("===================>device: ", next(model.parameters()).device)
         model(data,device)
+        end_time = time.time()
 
-        total_inf_time += (time.time()-start_time)
-    end_running_time = time.time()
-    print(f"Average input size: {total_input_size  / inference_num} byte, "
-          f"Average running time: {(end_running_time-start_running_time) / inference_num}, "
-          f"Average inference time: { total_inf_time / inference_num}")
+        total_inf_time += (end_time - inf_start_time)
+        total_running_time += (end_time - running_start_time)
+        print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
+        print(f"Service time : {(end_time - running_start_time)*1000:.2f} ms, average :{total_running_time/(i+1)*1000:.2f} ms")
+
 
 
 
