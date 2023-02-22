@@ -3,7 +3,7 @@ import os
 import pickle
 import shutil
 import sys
-
+import random
 import torch
 
 sys.path.append(".")
@@ -70,13 +70,16 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
     env_config, meta, handler, trainer, agent, init_env = \
         setup_agent(data=data, checkpoint=checkpoint, **config)
     total_input_size = total_running_time = total_inf_time = 0
+    idx = list(range(n_evals))
+    random.shuffle(idx)
     for i in range(n_evals):
+        print(idx[i])
         running_start_time = time.time()
-        file_path = f"GPUoffload_test/saved_obs/{i - i % 1000}/histories.pkl"
+        file_path = f"GPUoffload_test/saved_obs/{idx[i]}/histories.pkl"
         with open(file_path, 'rb') as file:
             histories = pickle.load(file)
             total_input_size += os.stat(file_path).st_size
-        file_path = f"GPUoffload_test/saved_obs/{i - i % 1000}/new_episodes.pkl"
+        file_path = f"GPUoffload_test/saved_obs/{idx[i]}/new_episodes.pkl"
         with open(file_path, 'rb') as file:
             new_episodes = pickle.load(file)
             total_input_size += os.stat(file_path).st_size
