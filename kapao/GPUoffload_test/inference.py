@@ -89,6 +89,7 @@ if __name__ == '__main__':
     skip = 0
     while i < max_inf_num:
         try:
+            print(f"processing {i} / {max_inf_num}")
             time_ckp_0 = time.time()
             (pic_name, img, im0, _) = next(dataset_iterator)
             total_img_size += sys.getsizeof(img)
@@ -100,10 +101,14 @@ if __name__ == '__main__':
             img = img.to(device)
             time_ckp_1 = time.time()
             out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
-            print("===================>device: ",next(model.parameters()).device)
+            # print("===================>device: ",next(model.parameters()).device)
             time_ckp_2 = time.time()
             i += 1
-            print(f"processing {i + 1} / {max_inf_num}")
+            
+            total_inf_time += time_ckp_2 - time_ckp_1
+            total_running_time += time_ckp_2 - time_ckp_0
+            print(f"T_robot : {time_ckp_2 - time_ckp_1}, average :{total_inf_time/i} (GPU computation time on robot)")
+            print(f"Service time : {time_ckp_2 - time_ckp_0}, average :{total_running_time/i}")
 
             person_dets, kp_dets = run_nms(data, out)
             if(len(person_dets[0])==0):
@@ -149,15 +154,9 @@ if __name__ == '__main__':
                 filename += '_kp_obj'
             filename += '.png'
 
-            total_inf_time += time_ckp_2 - time_ckp_1
-            total_running_time += time.time() - time_ckp_0
 
         except StopIteration:
             dataset_iterator = iter(dataset)
-
-    print(f"Average input size: {total_img_size/i} byte, "
-          f"Average running time: {total_running_time/i}, "
-          f"Average inference time: {total_inf_time/i} ")
 
 
 
