@@ -1,5 +1,5 @@
 data/gridworld/MazeMap_15x15_vr_2_4000_15_500/train filter=lfs diff=lfs merge=lfs -text
 data/gridworld/MazeMap_15x15_vr_2_4000_15_500/val filter=lfs diff=lfs merge=lfs -text
-calvin/data/gridworld/MazeMap_15x15_vr_2_4000_15_500/train/obsv.pt filter=lfs diff=lfs merge=lfs -text
-calvin/data/gridworld/MazeMap_15x15_vr_2_4000_15_500/train/episode.pt filter=lfs diff=lfs merge=lfs -text
-calvin/data/gridworld/MazeMap_15x15_vr_2_4000_15_500/val/obsv.pt filter=lfs diff=lfs merge=lfs -text
+data/gridworld/MazeMap_15x15_vr_2_4000_15_500/train/obsv.pt filter=lfs diff=lfs merge=lfs -text
+data/gridworld/MazeMap_15x15_vr_2_4000_15_500/train/episode.pt filter=lfs diff=lfs merge=lfs -text
+data/gridworld/MazeMap_15x15_vr_2_4000_15_500/val/obsv.pt filter=lfs diff=lfs merge=lfs -text
