@@ -1,5 +1,5 @@
 CURRENT_DIR=$(cd $(dirname $0); pwd)
-python3 ${CURRENT_DIR}/inference.py --root_path data/sample_scannet \
+python3 -W ignore ${CURRENT_DIR}/inference.py --root_path data/sample_scannet \
 --resize_size 256 --texture_size 4096,4096 \
 --min_images 1 --max_images 1000 --scene scene0673_00_closeup \
 --hierarchical --hierarchical_layers 4 \
