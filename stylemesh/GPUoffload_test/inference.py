@@ -25,8 +25,9 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 def main(args):
     # create normal trainer (joint training)
+    print("aaaaaaaaaa")
     trainer = Trainer.from_argparse_args(args)
-    print("dddddddddddddddddddd")
+    print("bbbbbbbbbbb")
     log_dir = join(trainer.logger.save_dir, f"lightning_logs/version_{trainer.logger.version}")
     inference_num = args.times
     transform_rgb = Compose([
@@ -162,10 +163,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    print("aaaaaaaaaaaaaaaaaaaaa")
     # add all flags from lightnings Trainer (i.e. --gpus)
     parser = Trainer.add_argparse_args(parser)
-    print("bbbbbbbbbbbbbbbbbbbbbb")
     # add all custom flags
     parser.add_argument('--root_path', default="/path/to/datasets/scannet")
     parser.add_argument('--Dataset', default="scannet", choices=["icl", "scannet", "vase", "3dfuture", "matterport"])
@@ -215,6 +214,6 @@ if __name__ == '__main__':
 
     # parse arguments given from command line (implicitly takes the args from main...)
     args = parser.parse_args()
-    print("cccccccccccccccccccccccc")
+
     # run program with args
     main(args)
