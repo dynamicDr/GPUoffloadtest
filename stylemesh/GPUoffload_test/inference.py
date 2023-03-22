@@ -25,7 +25,7 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 def main(args):
     # create normal trainer (joint training)
-    trainer = Trainer(accelarator="gpu").from_argparse_args(args)
+    trainer = Trainer.from_argparse_args(args)
     log_dir = join(trainer.logger.save_dir, f"lightning_logs/version_{trainer.logger.version}")
     inference_num = args.times
     transform_rgb = Compose([
