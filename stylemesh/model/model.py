@@ -70,7 +70,7 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
         style_image = None
         self.save_hyperparameters()
         style_image = orig_style_image
-
+        print("eeeeeeeeeeeeeeee")
         # --------------------
         # TEXTURE PREPARATION
         # --------------------
@@ -81,7 +81,7 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
             self.texture = HierarchicalNeuralTexture(W, H, self.C, hierarchical_layers, random_texture_init)
         else:
             self.texture = NeuralTexture(W, H, self.C, random_texture_init)
-
+        print("ffffffffffffffffffff")
         self.tex_reg_weights = tex_reg_weights
         if hierarchical_texture and not tex_reg_weights:
             self.tex_reg_weights = [pow(2, hierarchical_layers - i - 1) for i in range(hierarchical_layers)]

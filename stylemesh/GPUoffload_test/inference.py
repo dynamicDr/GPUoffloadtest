@@ -26,12 +26,14 @@ from torchvision.transforms import Resize, ToTensor, Compose
 def main(args):
     # create normal trainer (joint training)
     trainer = Trainer.from_argparse_args(args)
+    print("aaaaaaaaaaaaa")
     log_dir = join(trainer.logger.save_dir, f"lightning_logs/version_{trainer.logger.version}")
     inference_num = args.times
     transform_rgb = Compose([
         get_rgb_transform(),
         pre()
     ])
+    print("bbbbbbbbbbbbbb")
     transform_label = get_label_transform()
     transform_uv = get_uv_transform()
 
@@ -82,7 +84,7 @@ def main(args):
     if args.tex_reg_weights:
         args.tex_reg_weights = {int(w[0]): float(w[1]) for w in args.tex_reg_weights}
         args.tex_reg_weights = [args.tex_reg_weights[i] for i in range(len(args.tex_reg_weights))]
-
+    print("cccccccccccccccccccc")
     # get style image
     import PIL
     PIL.Image.MAX_IMAGE_PIXELS = 933120000
@@ -90,7 +92,7 @@ def main(args):
 
     if style_image.size[0] > 2048 or style_image.size[1] > 2048:
         style_image = Resize(2048)(style_image)
-
+    print("ddddddddddddddddddddddddd")
     style_image = ToTensor()(style_image)
     style_image = pre()(style_image)
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
